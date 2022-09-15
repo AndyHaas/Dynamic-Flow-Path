@@ -56,9 +56,11 @@
     },
 
     handleOnClick : function(component, event, helper) {
-        console.log('event id', event.target.id);
-        component.set("v.selectedStep", event.target.id);
-        var navigate = component.get("v.navigateFlow");
-        navigate("NEXT");
+        var autoNavigate = component.get('v.autoNavigate');
+        if (autoNavigate) {
+            component.set("v.selectedStep", event.target.id);
+            var navigate = component.get("v.navigateFlow");
+            navigate("NEXT");
+        }
     }
 })

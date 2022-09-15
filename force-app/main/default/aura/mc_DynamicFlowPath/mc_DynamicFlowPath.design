@@ -4,4 +4,5 @@
     <design:attribute name="currentStep" label="Current Step" description="Example: Step 1" />
     <design:attribute name="currentStepPercentage" label="Current Step Percentage Completion (Optional)" description="Optional. Must be integer between 0 and 100. Leave blank unless you want to override the auto-calculated percentage. Only affects Ring and Bar indicator types." />
     <design:attribute name="selectedStep" label="Selected Step" description="Example: Step 1" />
+    <design:attribute name="autoNavigate" label="Auto Navigate" description="If true, clicking on a step will automatically navigate the flow to the next screen. If false, nothing will happen when clicked" />
 </design:component>

@@ -11,6 +11,7 @@
     <aura:attribute name="pathProgress" type="Integer" />
     <aura:attribute name="stepsArray" type="List" access="global" />
     <aura:attribute name="selectedStep" type="String" />
+    <aura:attribute name="autoNavigate" type="Boolean" default="true" />
     
     
     <aura:html tag="style">
