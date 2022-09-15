@@ -1,0 +1,268 @@
+<aura:component implements="lightning:availableForFlowScreens" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Vertical, Horizontal, Path, Bar, Ring, NavMenu -->
+    <aura:attribute name="indicatorType" type="String" default="Path" />
+    <aura:attribute name="stepList" type="String" default="Step 1,Step 2,Step 3,Step 4,Step 5,Step 6"/>
+    <aura:attribute name="currentStep" type="String" default="Step 1"/>
+    <aura:attribute name="currentStepPercentage" type="Integer" />
+    <aura:attribute name="countToCurrent" type="String" />
+    <aura:attribute name="countTotalSteps" type="String" />
+    <aura:attribute name="pathProgress" type="Integer" />
+    <aura:attribute name="stepsArray" type="List" access="global" />
+    <aura:attribute name="selectedStep" type="String" />
+    
+    
+    <aura:html tag="style">
+        :root {
+        	--value: {!v.pathProgress};
+        }
+    </aura:html>
+    
+    
+    <div style="padding:10px;">
+        
+        <!-- ##### Vertical Indicator ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'Vertical'}">
+            
+            <div class="slds-progress slds-progress_vertical">
+                <ol class="slds-progress__list">
+                    <aura:iteration items="{!v.stepsArray}" var="sta">
+                        
+                        <!-- if Complete -->
+                        <aura:renderIf isTrue="{!sta.status == 'Complete'}">
+                            <li class="slds-progress__item slds-is-completed">
+                                <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon slds-progress__marker_icon-success" title="Complete" onclick="{!c.handleOnClick}">
+                                    <div class="slds-icon slds-icon_xx-small" aria-hidden="true">
+                                        <lightning:icon iconName="utility:success" variant="success" size="xx-small" class="slds-icon slds-icon_xx-small" />
+                                    </div>
+                                    <span class="slds-assistive-text">Complete</span>
+                                </span>
+                                <div class="slds-progress__item_content slds-grid slds-grid_align-spread">{!sta.label}</div>
+                            </li>
+                        </aura:renderIf>
+                        
+                        <!-- if Current -->
+                        <aura:renderIf isTrue="{!sta.status == 'Current'}">
+                            <li class="slds-progress__item slds-is-active">
+                                <div class="slds-progress__marker">
+                                    <span class="slds-assistive-text">Current</span>
+                                </div>
+                                <div class="slds-progress__item_content slds-grid slds-grid_align-spread"><strong>{!sta.label}</strong></div>
+                            </li>
+                        </aura:renderIf>
+                        
+                        <!-- if Upcoming -->
+                        <aura:renderIf isTrue="{!sta.status == 'Upcoming'}">
+                            <li class="slds-progress__item">
+                                <div class="slds-progress__marker">
+                                    <span class="slds-assistive-text">Upcoming</span>
+                                </div>
+                                <div class="slds-progress__item_content slds-grid slds-grid_align-spread">{!sta.label}</div>
+                            </li>
+                        </aura:renderIf>
+                        
+                    </aura:iteration>
+                </ol>
+            </div>
+            
+        </aura:renderIf>
+        <!-- ##### END: Vertical Indicator ##### -->
+        
+        
+        
+        <!-- ##### VertNav ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'VertNav'}">
+            <nav class="slds-nav-vertical" aria-label="Menu">
+                <div class="slds-nav-vertical__section">
+                    <!-- <h2 id="entity-header" class="slds-nav-vertical__title">Reports</h2> -->
+                    <ul aria-describedby="entity-header">
+                        
+                        <aura:iteration items="{!v.stepsArray}" var="sta">
+                            
+                            <!-- if Complete -->
+                            <aura:renderIf isTrue="{!sta.status == 'Complete'}">
+                                <li class="slds-nav-vertical__item">
+                                    <span class="slds-nav-vertical__action no-hover">{!sta.label}</span>
+                                    <span class="slds-assistive-text">Complete</span>
+                                </li>
+                            </aura:renderIf>
+                            
+                            <!-- if Current -->
+                            <aura:renderIf isTrue="{!sta.status == 'Current'}">
+                                <li class="slds-nav-vertical__item slds-is-active">
+                                    <span class="slds-nav-vertical__action" aria-current="true">{!sta.label}</span>
+                                    <span class="slds-assistive-text">Current</span>
+                                </li>
+                            </aura:renderIf>
+                            
+                            <!-- if Upcoming -->
+                            <aura:renderIf isTrue="{!sta.status == 'Upcoming'}">
+                                <li class="slds-nav-vertical__item">
+                                    <span class="slds-nav-vertical__action no-hover" aria-current="true">{!sta.label}</span>
+                                    <span class="slds-assistive-text">Upcoming</span>
+                                </li>
+                            </aura:renderIf>
+                            
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </nav>
+        </aura:renderIf>
+        <!-- ##### END: NavMenu ##### -->
+        
+        
+        
+        <!-- ##### Horizontal Indicator ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'Horizontal'}">
+            <div class="slds-progress">
+                <ol class="slds-progress__list">
+                    
+                    <div class="slds-progress-bar slds-progress-bar_x-small" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{!v.pathProgress}" aria-label="{!v.pathProgress + '% Complete'}" role="progressbar">
+                        <span class="slds-progress-bar__value" style="{! 'width:' + v.pathProgress + '%;'}">
+                            <span class="slds-assistive-text">{!v.pathProgress}% Complete</span>
+                        </span>
+                    </div>
+                    
+                    <aura:iteration items="{!v.stepsArray}" var="sta">
+                        
+                        
+                        <!-- if Complete -->
+                        <aura:renderIf isTrue="{!sta.status == 'Complete'}">
+                            
+                            <li class="slds-progress__item slds-is-completed">
+                                <span class="slds-icon_container slds-icon-utility-success slds-progress__marker slds-progress__marker_icon" title="Complete">
+                                    <div class="slds-icon slds-icon_xx-small" aria-hidden="true">
+                                        <lightning:icon iconName="utility:success" variant="success" size="xx-small" class="slds-icon slds-icon_xx-small" />
+                                    </div>
+                                    <span class="slds-assistive-text">Complete</span>
+                                </span>
+                            </li>
+                        </aura:renderIf>
+                        
+                        
+                        <!-- if Current -->
+                        <aura:renderIf isTrue="{!sta.status == 'Current'}">
+                            <li class="slds-progress__item slds-is-active">
+                                <div class="slds-button slds-progress__marker">
+                                    <span class="slds-assistive-text">Current</span>
+                                </div>
+                            </li>
+                        </aura:renderIf>
+                        
+                        
+                        <!-- if Upcoming -->
+                        <aura:renderIf isTrue="{!sta.status == 'Upcoming'}">
+                            <li class="slds-button slds-progress__item">
+                                <div class="slds-progress__marker">
+                                    <span class="slds-assistive-text">Upcoming</span>
+                                </div>
+                            </li>
+                        </aura:renderIf>
+                        
+                        
+                    </aura:iteration>
+                </ol>
+            </div>
+        </aura:renderIf>
+        <!-- ##### END: Horizontal Indicator ##### -->
+        
+        
+        
+        <!-- ##### Horizontal Path ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'Path'}">
+            
+            <div class="slds-path">
+                <div class="slds-grid slds-path__track">
+                    <div class="slds-grid slds-path__scroller-container">
+                        <div class="slds-path__scroller">
+                            <div class="slds-path__scroller_inner">
+                                <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                    
+                                    <aura:iteration items="{!v.stepsArray}" var="sta">
+                                        
+                                        
+                                        <!-- if Complete -->
+                                        <aura:renderIf isTrue="{!sta.status == 'Complete'}">
+                                            <li class="slds-path__item slds-is-complete" role="presentation" data-value="{!sta.label}" id="{!sta.label}" onclick="{!c.handleOnClick}">
+                                                <a aria-selected="false" class="slds-path__link" href="#" id="{!sta.label}" role="option" tabindex="-1">
+                                                    <span class="slds-path__stage">
+                                                        <lightning:icon iconName="utility:check" variant="inverse" size="xx-small" class="slds-icon slds-icon_x-small" />
+                                                        <span class="slds-assistive-text">Complete</span>
+                                                    </span>
+                                                    <span class="slds-path__title">{!sta.label}</span>
+                                                </a>
+                                            </li>
+                                        </aura:renderIf>
+                                        
+                                        
+                                        <!-- if Current -->
+                                        <aura:renderIf isTrue="{!sta.status == 'Current'}">
+                                            <li class="slds-path__item slds-is-current slds-is-active" role="presentation" data-value="{!sta.label}" id="{!sta.label}" onclick="{!c.handleOnClick}">
+                                                <a aria-selected="true" class="slds-path__link" href="#" id="{!sta.label}" role="option" tabindex="0">
+                                                    <span class="slds-path__stage">
+                                                        <lightning:icon iconName="utility:check" variant="inverse" size="xx-small" class="slds-icon slds-icon_x-small" />
+                                                        <span class="slds-assistive-text">Current</span>
+                                                    </span>
+                                                    <span class="slds-path__title">{!sta.label}</span>
+                                                </a>
+                                            </li>
+                                        </aura:renderIf>
+                                        
+                                        
+                                        <!-- if Upcoming -->
+                                        <aura:renderIf isTrue="{!sta.status == 'Upcoming'}">
+                                            <li class="slds-path__item slds-is-incomplete" role="presentation" data-value="{!sta.label}" id="{!sta.label}" onclick="{!c.handleOnClick}">
+                                                <a aria-selected="false" class="slds-path__link" href="#" id="{!sta.label}" role="option" tabindex="-1">
+                                                    <span class="slds-path__stage">
+                                                        <lightning:icon iconName="utility:check" variant="inverse" size="xx-small" class="slds-icon slds-icon_x-small" />
+                                                        <span class="slds-assistive-text">Upcoming</span>
+                                                    </span>
+                                                    <span class="slds-path__title">{!sta.label}</span>
+                                                </a>
+                                            </li>
+                                        </aura:renderIf>
+                                        
+                                        
+                                    </aura:iteration>
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </aura:renderIf>
+        <!-- ##### END: Horizontal Path ##### -->
+        
+        
+        
+        
+        <!-- ##### Progress Bar ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'Bar'}">
+            <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small" id="progress-bar-label-id-6">
+                <span><strong>{!v.currentStep}</strong></span>
+                <span aria-hidden="true">
+                    <strong>{!v.pathProgress}% Complete</strong>
+                </span>
+            </div>
+            <div class="slds-progress-bar slds-progress-bar_circular slds-progress-bar_large" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{!v.pathProgress}" aria-labelledby="progress-bar-label-id-6" aria-label="{!v.pathProgress + '% Complete'}" role="progressbar">
+                <span class="slds-progress-bar__value" style="{! 'width:' + v.pathProgress + '%;'}">
+                    <span class="slds-assistive-text">{!v.pathProgress}% Complete</span>
+                </span>
+            </div>
+        </aura:renderIf>
+        <!-- ##### END: Progress Bar ##### -->
+        
+        
+        
+        
+        <!-- ##### Progress Ring ##### -->
+        <aura:renderIf isTrue="{!v.indicatorType == 'Ring'}">
+            <div class="progress-ring" aria-valuenow="{!v.pathProgress}" aria-valuemin="0" aria-valuemax="100" />
+        </aura:renderIf>
+        
+    </div>
+    
+</aura:component>
